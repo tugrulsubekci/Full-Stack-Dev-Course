@@ -25,6 +25,16 @@ app.post("/bmi-calculator", (req,res) => {
     res.send("bmi value is: " + bmiValue);
 })
 
+// joke api section
+app.get( "/jokeApi", (req,res) => {
+    res.sendFile(__dirname + "/joke.html", function (err, body) {
+        if (err) {
+            console.log(err);
+        }
+        console.log(body);
+    })
+})
+
 app.listen(PORT, () => {
     console.log("listening on port: " + PORT);
 })
