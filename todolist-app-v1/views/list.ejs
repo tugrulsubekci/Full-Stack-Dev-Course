@@ -1,26 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TO DO LIST - APP</title>
-</head>
-<body>
-    <h1> <%= dayName %></h1>
-    <ul>
-        <li>Go to home</li>
-        <li>Go to school</li>
-        <li>Go to work</li>
-        
+<%- include("header") %>    
+    
+    <div class="box" id="heading">
+        <h1> <%= listTitle %></h1>
+    </div>
+    <div class="box">
         <% newListItems.forEach(element => { %>
-           <li>  <%= element %> </li> 
+            <div class="item">
+                <input type="checkbox">
+                <p>  <%= element %> <p> 
+            </div>
         <% }); %>
-    </ul>
 
-    <form method="post" action="/">
-        <input type="text" name="listItem">
-        <button type="submit" name="addListItem">Submit</button>
-    </form>
-</body>
-</html>
+            <form class="item" method="post" action="/">
+                <input type="text" name="listItem" placeholder="New Item" autocomplete="off">
+                <button type="submit" name="addListItem" value= "<%= listTitle %>">+</button>
+            </form>
+    </div>
+
+<%- include("footer") %>    
