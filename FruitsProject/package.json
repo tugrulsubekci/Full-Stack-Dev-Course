@@ -9,6 +9,7 @@
   "author": "Blacklash",
   "license": "ISC",
   "dependencies": {
-    "mongodb": "5.1"
+    "mongodb": "5.1",
+    "mongoose": "^7.0.2"
   }
 }
