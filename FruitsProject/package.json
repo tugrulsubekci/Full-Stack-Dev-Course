@@ -1,0 +1,14 @@
+{
+  "name": "fruitsproject",
+  "version": "1.0.0",
+  "description": "use native mongodb with node js",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Blacklash",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "5.1"
+  }
+}
