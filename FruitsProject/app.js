@@ -1,30 +1,21 @@
-const { MongoClient } = require('mongodb');
-// or as an es module:
-// import { MongoClient } from 'mongodb'
+const mongoose = require('mongoose');
 
-// Connection URL
-const url = 'mongodb://127.0.0.1:27017';
-const client = new MongoClient(url);
+mongoose.connect('mongodb://127.0.0.1:27017/fruitsDB', {useNewUrlParser: true});
 
-// Database Name
-const dbName = 'fruitsDB';
+const personSchema = new mongoose.Schema({
+  name: String,
+  age: Number
+})
 
+const Person = mongoose.model('Person', personSchema);
+  
+main();
 
 async function main() {
-  // Use connect method to connect to the server
-  await client.connect();
-  console.log('Connected successfully to server');
-  const db = client.db(dbName);
-  const collection = db.collection('fruits');
-  // the following code examples can be pasted here...
-  const insertResult = await collection.insertMany([{ a: 1 }, { a: 2 }, { a: 3 }]);
-  console.log('Inserted documents =>', insertResult);
-  
-  return 'done.';
-}
+  const person = new Person({
+    name: "Deneme",
+    age: 99
+  });
 
-main()
-  .then(console.log)
-  .catch(console.error)
-  .finally(() => client.close());
-
+  await person.save();
+};
