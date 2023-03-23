@@ -8,14 +8,50 @@ const personSchema = new mongoose.Schema({
 })
 
 const Person = mongoose.model('Person', personSchema);
-  
-main();
 
-async function main() {
-  const person = new Person({
-    name: "Deneme",
-    age: 99
+const fruitSchema = new mongoose.Schema({
+  name: String,
+  rating: Number,
+  review: String
+})
+
+const Fruit = mongoose.model('Fruit', fruitSchema);
+  
+// main();
+
+// async function main() {
+//   const apple = new Fruit({
+//     name: "Apple",
+//     rating: 7,
+//     review: "Pretty solid as a fruit"
+//   });
+//   const kiwi = new Fruit({
+//     name: "Kiwi",
+//     review: "The best fruit!"
+//   });
+//   const orange = new Fruit({
+//     name: "Orange",
+//     review: "Too sour for me!"
+//   });
+//   const banana = new Fruit({
+//     name: "Banana",
+//     review: "Weird texture"
+//   });
+
+//   await apple.save();
+//   await kiwi.save();
+//   await orange.save();
+//   await banana.save();
+// };
+getFruits();
+
+
+async function getFruits() {
+  await Fruit.find().then((collection)=> {
+    collection.forEach((f)=> {
+      console.log(f.name);
+    })
   });
 
-  await person.save();
-};
+  mongoose.connection.close();
+}
