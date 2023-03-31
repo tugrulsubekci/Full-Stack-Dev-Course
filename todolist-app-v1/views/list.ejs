@@ -14,7 +14,7 @@
 
         <% }); %>
 
-            <form class="item" method="post" action="/">
+            <form class="item" method="post" action="/<%= listTitle %>">
                 <input type="text" name="listItem" placeholder="New Item" autocomplete="off">
                 <button type="submit" name="addListItem" value= "<%= listTitle %>">+</button>
             </form>

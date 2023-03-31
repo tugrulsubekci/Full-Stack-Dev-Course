@@ -26,39 +26,57 @@ let newItems = [];
 
 app.get('/', async (req, res) => {
     await getItemsDB();
-    let day = date.getDate();
     
     res.render('list', {
-        listTitle: day,
+        listTitle: "item",
         newListItems: items
     });
 });
 
-app.get('/work', (req, res) => {
+app.get('/:dbEndPoint', async (req, res) => {
+    var dbName = req.params.dbEndPoint;
+    await getDatabaseByName(dbName);
+    
     res.render('list', {
-        listTitle: "Work",
-        newListItems: newItems
+        listTitle: dbName,
+        newListItems: items
     });
 });
 
-app.post("/", function(req, res) {
-    let item = req.body.listItem;
+// app.post("/", function(req, res) {
+//     let item = req.body.listItem;
 
-    if(req.body.addListItem === "Work") {
-        newItems.push(item);
-        res.redirect("/work")
-    }
-    else {
-        let todoListItem = new Item({
-            name: item
-        })
+//     if(req.body.addListItem === "Work") {
+//         newItems.push(item);
+//         res.redirect("/work")
+//     }
+//     else {
+//         let todoListItem = new Item({
+//             name: item
+//         })
         
-        saveToDB(todoListItem);
+//         saveToDB(todoListItem);
 
-        items.push(item);
-        res.redirect("/");
+//         items.push(item);
+//         res.redirect("/");
+//     }
+
+// });
+app.post("/:dbEndPoint", function(req, res) {
+    var dbName = req.params.dbEndPoint;
+    let item = req.body.listItem;
+    const RouteItem = mongoose.model(dbName, itemSchema);
+    let todoListItem = new RouteItem({
+        name: item
+    })
+    
+    saveToDB(todoListItem);
+
+    items.push(item);
+    if(dbName === "item") {
+        dbName= "";
     }
-
+    res.redirect("/"+ dbName);
 });
 
 app.post("/delete", async function(req, res) {
@@ -72,6 +90,15 @@ async function saveToDB(item) {
 }
 async function getItemsDB() {
     const allItems = await Item.find();
+    console.log(allItems);
+    items = [];
+    allItems.forEach(function(item) {
+        items.push(item);
+    });
+}
+async function getDatabaseByName(dbName) {
+    const RouteItem = mongoose.model(dbName, itemSchema);
+    const allItems = await RouteItem.find();
     console.log(allItems);
     items = [];
     allItems.forEach(function(item) {
