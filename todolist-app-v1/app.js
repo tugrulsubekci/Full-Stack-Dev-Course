@@ -4,11 +4,12 @@ const date = require(__dirname + "/date.js");
 const mongoose = require('mongoose');
 const { json } = require('body-parser');
 const app = express();
+const _ = require("lodash");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://127.0.0.1:27017/todoListDB", {useNewUrlParser: true});
+mongoose.connect("mongodb+srv://tugrulsubekci:VpyaoxwZVwv9xRt9@blacklash.l3efeyb.mongodb.net/todoListDB?retryWrites=true&w=majority", {useNewUrlParser: true});
 
 const itemSchema = new mongoose.Schema({
     name: {
@@ -48,7 +49,7 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/:dbEndPoint', async (req, res) => {
-    let collectionName = req.params.dbEndPoint;
+    let collectionName = _.capitalize(req.params.dbEndPoint);
     let itemList = await ItemList.findOne({name: collectionName});
 
     if(!itemList) {
