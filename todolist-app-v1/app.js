@@ -19,96 +19,81 @@ const itemSchema = new mongoose.Schema({
 
 const Item = mongoose.model("Item", itemSchema);
 
+const listSchema = new mongoose.Schema({
+    name: String,
+    items: [itemSchema]
+});
+
+const ItemList = mongoose.model("ItemList", listSchema);
+
 app.set('view engine', 'ejs');
 
-let items = [];
-let newItems = [];
-
 app.get('/', async (req, res) => {
-    await getItemsDB();
+    let collectionName = date.getDay();
+    let itemList = await ItemList.findOne({name: collectionName});
+
+    if(!itemList) {
+        itemList = new ItemList({
+            name: collectionName,
+            items: []
+        });
+
+        await itemList.save();
+    }
     
     res.render('list', {
-        listTitle: "item",
-        newListItems: items
+        listTitle: collectionName,
+        newListItems: itemList.items
     });
 });
 
 app.get('/:dbEndPoint', async (req, res) => {
-    var dbName = req.params.dbEndPoint;
-    await getDatabaseByName(dbName);
-    
-    res.render('list', {
-        listTitle: dbName,
-        newListItems: items
-    });
-});
+    let collectionName = req.params.dbEndPoint;
+    let itemList = await ItemList.findOne({name: collectionName});
 
-// app.post("/", function(req, res) {
-//     let item = req.body.listItem;
+    if(!itemList) {
+        itemList = new ItemList({
+            name: collectionName,
+            items: []
+        });
 
-//     if(req.body.addListItem === "Work") {
-//         newItems.push(item);
-//         res.redirect("/work")
-//     }
-//     else {
-//         let todoListItem = new Item({
-//             name: item
-//         })
-        
-//         saveToDB(todoListItem);
-
-//         items.push(item);
-//         res.redirect("/");
-//     }
-
-// });
-app.post("/:dbEndPoint", function(req, res) {
-    var dbName = req.params.dbEndPoint;
-    let item = req.body.listItem;
-    const RouteItem = mongoose.model(dbName, itemSchema);
-    let todoListItem = new RouteItem({
-        name: item
-    })
-    
-    saveToDB(todoListItem);
-
-    items.push(item);
-    if(dbName === "item") {
-        dbName= "";
+        await itemList.save();
     }
-    res.redirect("/"+ dbName);
+
+    res.render('list', {
+        listTitle: collectionName,
+        newListItems: itemList.items
+    });
 });
 
-app.post("/delete", async function(req, res) {
-    const id = req.body.checkbox;
-    await deleteByID(id);
-    res.redirect("/");
+app.post("/:dbEndPoint", async function(req, res) {
+    const listName = req.params.dbEndPoint;
+    const inputText = req.body.listItem;
+
+    const newItem = new Item({
+        name: inputText,
+    })
+
+    let itemList = await ItemList.findOne({name: listName});
+
+    if(itemList) {
+        itemList.items.push(newItem);
+        await itemList.save();
+    }
+
+    res.redirect("/"+ listName);
 });
 
-async function saveToDB(item) {
-    await item.save();
-}
-async function getItemsDB() {
-    const allItems = await Item.find();
-    console.log(allItems);
-    items = [];
-    allItems.forEach(function(item) {
-        items.push(item);
-    });
-}
-async function getDatabaseByName(dbName) {
-    const RouteItem = mongoose.model(dbName, itemSchema);
-    const allItems = await RouteItem.find();
-    console.log(allItems);
-    items = [];
-    allItems.forEach(function(item) {
-        items.push(item);
-    });
-}
+app.post("/delete/:id", async function(req, res) {
+    const id = req.params.id;
+    const listTitle = req.body.checkbox;
+    console.log(id);
+    console.log(listTitle);
 
-async function deleteByID(id) {
-    await Item.findByIdAndRemove(id);
-}
+    await ItemList.findOneAndUpdate({name: listTitle}, {$pull : {items: {_id: id}}}, )
+
+    res.redirect("/" + listTitle);
+});
 
 app.listen(3000, () => {
     console.log('Example app listening on port 3000');
